@@ -24,6 +24,8 @@ var/
 *.egg
 *.txt
 
+__pycache__
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -80,6 +82,8 @@ node_modules/
 certs/
 
 *.out
+*.log
+ChromeBotProfile/
 
 celerybeat*
 

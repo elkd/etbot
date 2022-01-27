@@ -1,6 +1,7 @@
 from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import (
@@ -10,32 +11,17 @@ from selenium.common.exceptions import (
 
 def clear_complete_profile_popup(browser):
     try:
-        # storing the current window handle to get back to dashboard
-        main_page = browser.current_window_handle
-
-        print(browser.window_handles)
-        print(len(browser.window_handles))
-        # changing the handles to access login page
-        profile_page = None
-        for handle in browser.window_handles:
-            if handle != main_page:
-                profile_page = handle
-
-        # change the control to signin page       
-        browser.switch_to.window(profile_page)
-
-        pop_modal = WebDriverWait(browser, 60).until(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
-
-        #neverask_check = browser.find_element_by_css_selector('input#cbTradeModal')
-        #browser.execute_script("arguments[0].click();", neverask_check)
         sleep(5)
-        close_btn = browser.find_element_by_css_selector('button.default-font-icon.icon-close')
+
+        #complete_prof_popup = browser.find_element_by_css_selector("div#cdk-overlay-1")
+        #ActionChains(browser).move_to_element(complete_prof_popup).pause(1).click(complete_prof_popup).perform()
+
+        close_btn = browser.find_element_by_xpath('//*[@id="cdk-overlay-1"]/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
         browser.execute_script("arguments[0].click();", close_btn)
 
         sleep(5)
-        #change control to main page
-        browser.switch_to.window(main_page)
         return True
+
     except (NoSuchElementException, ElementNotInteractableException) as e:
         print(f'Clear Func has Exception {e}')
         sleep(5)

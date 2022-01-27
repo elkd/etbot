@@ -71,29 +71,25 @@ def upload_post(browser):
         print(f'Eroto Known Exception Captured {e}')
         clear_complete_profile_popup(browser)
 
+        sleep(10)
         browser.execute_script("window.scrollBy(0,200)","")
         #wait.until_not(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
-        browser.refresh()
-        sleep(10)
         upload_post(browser)
 
     except Exception as e:
         print(f'Unhandled Exception Happened: {e}')
         print(f'THE BROWSER WILL EXIT IN 60 SECONDS')
         print(f'THE BROWSER WILL EXIT SOONER...')
-        sleep(60)
+        browser.refresh()
+        sleep(30)
 
 
 def run_upload_task():
     options = uc.ChromeOptions()
 
-    # setting profile
-    #options.user_data_dir = "c:\\temp\\profile"
-
-    # just some options passing in to skip annoying popups
+    options.add_argument('--user-data-dir=ChromeBotProfile')
     options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-    #browser = webdriver.Firefox()
-    #browser = webdriver.Chrome()
+
     browser = uc.Chrome(options=options)
     browser.implicitly_wait(60)
     browser.maximize_window()
