@@ -20,13 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pt&oiheuap+t1=qv_&zyp_6)zr53cjrlcpra$^)ceu_smgra)o'
+try:
+    SECRET_KEY = os.environ["SECRET_KEY"]
+except KeyError as e:
+    raise RuntimeError("Could not find a SECRET_KEY in environment") from e
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.babylonbot.link']
 
 
 # Application definition
@@ -147,7 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ADMIN_URL='tAzaOQ7K1XqSxnM6b7'
 
-LOGIN_REDIRECT_URL = 'posting-schedule'
+LOGIN_REDIRECT_URL = 'posting-schedule/new/'
 
 
 # Max data to be uploaded to Django server. This is around 1.2GB
