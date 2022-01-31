@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap_datepicker_plus',
     'autopost',
 ]
 
@@ -107,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
@@ -121,9 +122,43 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# STATIC
+# -------------------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+STATICFILES_DIRS = [
+     os.path.join(BASE_DIR, 'static')
+]
+
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ADMIN_URL='tAzaOQ7K1XqSxnM6b7'
+
+LOGIN_REDIRECT_URL = 'posting-schedule'
+
+
+# Max data to be uploaded to Django server. This is around 1.2GB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1300000000
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1300000000
+
+
+# REDIS setup
+REDIS_URL = 'redis://localhost:6379'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+CELERY_TIMEZONE = 'Europe/Paris'

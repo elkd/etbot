@@ -1,3 +1,5 @@
 from django.contrib import admin
+from autopost.models import EtoroUser, ScheduledPosts
 
-# Register your models here.
+admin.site.register(ScheduledPosts)
+admin.site.register(EtoroUser)

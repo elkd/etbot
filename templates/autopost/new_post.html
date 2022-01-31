@@ -1,0 +1,43 @@
+<!-- Post Form -->
+{% load static i18n %}
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Schedule New BabylonBot Post</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+        <link href="{% static 'css/new_post.css' %}" rel="stylesheet"/>
+    </head>
+
+    <body>
+
+      <div id="form-wrapper">
+        <form id="msform" method="POST" enctype="multipart/form-data">
+            <!-- Security token -->
+            {% csrf_token %}
+
+            {{ form.media }}
+            <!-- Using the formset -->
+            <fieldset>
+                <h2 class="fs-title">Schedule your post</h2>
+                <h3 class="fs-subtitle">BabylonBot</h3>
+
+                <textarea name="content" cols="40" rows="10" required="" id="id_content" placeholder="Write the content...."></textarea>
+
+                {{ form.image }}
+
+                {{ form.post_time }}
+
+                {{ form.author }}
+
+                </br>
+                
+                <input type="submit" value="Submit" class="action-button">
+            </fieldset>
+        </form>
+      </div>
+    <body>
+</html>
