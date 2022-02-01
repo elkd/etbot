@@ -50,7 +50,7 @@ if DEBUG is False:
 
     from pyvirtualdisplay import Display
 
-    with Display(backend="xvfb", visible=False, size=(100, 60)) as disp:
+    with Display(backend="xvfb", visible=True, size=(100, 60)) as disp:
         with EasyProcess(["xmessage", "hello"]) as proc:
             proc.wait()
 
