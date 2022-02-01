@@ -176,7 +176,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ADMIN_URL='tAzaOQ7K1XqSxnM6b7'
 
-LOGIN_REDIRECT_URL = 'posting-schedule/new/'
+LOGIN_REDIRECT_URL = '/posting-schedule/new/'
 
 
 # Max data to be uploaded to Django server. This is around 1.2GB
