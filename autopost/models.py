@@ -8,6 +8,10 @@ class EtoroUser(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.username
+
+
 
 class ScheduledPost(models.Model):
     FAILED = "F"
@@ -37,6 +41,10 @@ class ScheduledPost(models.Model):
     status = models.CharField(max_length=1, choices=STATUS, default=AWAITING)
     post_time = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return self.content[:30]
+
+
 
 class UploadReport(models.Model):
     post = models.ForeignKey(
@@ -46,3 +54,7 @@ class UploadReport(models.Model):
         )
     notes = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return self.notes[:30]

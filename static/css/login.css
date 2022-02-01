@@ -114,8 +114,13 @@ h2 {
 }
 
 .signup__form {
-  padding: 2.5rem;
-  background: #fafafa;
+    padding: 2.5rem;
+    background: #fafafa;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 label {
@@ -144,18 +149,18 @@ label {
 }
 
 .btn--form {
-  padding: 0.5rem 2.5rem;
+  padding: 10px 45px;
   font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
   color: #fff !important;
-  background: #111 !important;
+  background: #417690 !important;
   border-radius: 2.1875rem;
   margin: 2em auto;
 }
 
 .btn--form:focus, .btn--form:hover {
-  background: #323232;
+  background: #417690;
 }
 
 .signup__link {
@@ -166,8 +171,4 @@ label {
 }
 .signup__link:focus, .signup__link:hover {
   color: #787878;
-}
-
-#error {
-    color: red;
 }

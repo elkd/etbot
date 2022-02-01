@@ -33,48 +33,15 @@
   color: #ffffff;
 }
 
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
-  color: #ffffff;
-  background-color: transparent;
-}
-
-.navbar-default .navbar-toggle {
-  border-color: transparent;
-}
-
-.navbar-default .navbar-toggle:hover {
-  background-color: transparent;
-}
-
-.navbar-default .navbar-toggle:focus {
-  background-color: transparent;
-}
-
-.navbar-default .navbar-toggle .icon-bar {
-  background-color: #ffffff;
-}
 
 .carousel .background {
   background-position: center center;
-  background-size: 100% 100% !important;
+  background-size: cover; /* To make the background image looks good */
   background-repeat: no-repeat;
   height: 100%;
+  background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/images/city.jpeg");
 }
 
-@media (max-width:991px) {
-  .carousel .background {
-    background-size: cover; /* To make the background image looks good */
-  }
-}
-
-.carousel .background.a {
-  background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://static.pexels.com/photos/93750/pexels-photo-93750-large.jpeg");
-}
-
-.carousel .background.c {
-  background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://static.pexels.com/photos/76827/bahia-ocean-bay-boat-76827-large.jpeg");
-}
 
 .carousel-fade .carousel-inner .item {
   opacity: 0;
@@ -140,11 +107,11 @@
 .explore .btn-lg,
 .explore .btn-lg:hover {
   border-radius: 30px;
-  padding: 15px 25px;
+  padding: 10px 40px;
   font-size: 22px;
   background-image: none;
-  background-color: #FF4000;
-  border-color: #FF4000;
+  background-color: #417690;
+  border-color: #417690;
   color: #ffffff;
 }
 
@@ -152,8 +119,8 @@
 .btn:hover {
   border-radius: 0px;
   background-image: none;
-  background-color: #FF4000;
-  border-color: #FF4000;
+  background-color: #417690;
+  border-color: #417690;
   color: #ffffff;
   margin-bottom: 20px;
   box-shadow: none;

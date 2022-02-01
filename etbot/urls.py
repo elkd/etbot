@@ -21,6 +21,12 @@ from django.conf.urls.static import static
 
 from autopost.views import post_list_view, CreatePostView
 
+
+admin.site.site_header = "BabylonBot Dashboard"
+admin.site.site_title = "BabylonBot Admin Dashboard"
+admin.site.index_title = "Welcome to BabylonBot Admin Dashboard"
+
+
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path(settings.ADMIN_URL, admin.site.urls),
