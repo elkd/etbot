@@ -174,7 +174,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ADMIN_URL='tAzaOQ7K1XqSxnM6b7'
+ADMIN_URL='tAzaOQ7K1XqSxnM6b7/'
 
 LOGIN_REDIRECT_URL = '/posting-schedule/new/'
 
