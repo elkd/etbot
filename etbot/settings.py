@@ -11,27 +11,50 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import environ
+import requests
 from pathlib import Path
+
+
+def get_ec2_instance_ip():
+    """
+    Try to obtain the IP address of the current EC2 instance in AWS
+    """
+    try:
+        ip = requests.get(
+          'http://169.254.169.254/latest/meta-data/local-ipv4',
+          timeout=5
+        ).text
+    except requests.exceptions.ConnectionError:
+        logging.error('COULD NOT GET AWS EC2 INSTANCE IP')
+        return None
+    return ip
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+# GENERAL
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#debug
+DEBUG = env.bool("DJANGO_DEBUG", False)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 try:
-    SECRET_KEY = os.environ["SECRET_KEY"]
+    SECRET_KEY = env('SECRET_KEY')
 except KeyError as e:
     raise RuntimeError("Could not find a SECRET_KEY in environment") from e
 
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['.babylonbot.link']
-
+ALLOWED_HOSTS = ['.babylonbot.link', 'localhost']
 
 # Application definition
 
