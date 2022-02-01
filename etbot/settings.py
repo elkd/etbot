@@ -47,15 +47,6 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 
 
 if DEBUG is False:
-    from easyprocess import EasyProcess
-
-    from pyvirtualdisplay import Display
-
-    with Display(backend="xvfb", visible=True, size=(100, 60)) as disp:
-        with EasyProcess(["xmessage", "hello"]) as proc:
-            proc.wait()
-
-
     # SECURITY
     # ------------------------------------------------------------------------------
     # https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
