@@ -22,6 +22,8 @@ selenium
 undetected-chromedriver
 pyautogui
 python-dotenv
+pyvirtualdisplay #https://github.com/ponty/pyvirtualdisplay
+EasyProcess
 Django==3.2
 
 pytz>=2018.5  # https://github.com/stub42/pytz

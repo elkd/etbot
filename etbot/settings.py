@@ -45,8 +45,15 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = env.bool("DJANGO_DEBUG", False)
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+if DEBUG is False:
+    from easyprocess import EasyProcess
+
+    from pyvirtualdisplay import Display
+
+    with Display(backend="xvfb", visible=False, size=(100, 60)) as disp:
+        with EasyProcess(["xmessage", "hello"]) as proc:
+            proc.wait()
+
 
 try:
     SECRET_KEY = env('SECRET_KEY')
