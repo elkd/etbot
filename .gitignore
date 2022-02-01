@@ -66,6 +66,7 @@ media/
 
 .venv/
 staticfiles/
+prod-staticfiles/
 .idea
 
 CODEOWNERS
