@@ -16,13 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.conf.urls.static import static
 
 from autopost.views import post_list_view, CreatePostView
 
 urlpatterns = [
-    path('', RedirectView.as_view(pattern_name='login'), name='home'),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path(settings.ADMIN_URL, admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('posting-schedule/', post_list_view),

@@ -91,6 +91,11 @@ if DEBUG is False:
     # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
     X_FRAME_OPTIONS = 'DENY'
 
+    AWS_LOCAL_IP = get_ec2_instance_ip()
+    ALLOWED_HOSTS = [AWS_LOCAL_IP, 'www.babylonbot.link', 'babylonbot.link']
+
+else:
+    ALLOWED_HOSTS = ['*']
 
 try:
     SECRET_KEY = env('SECRET_KEY')
@@ -98,8 +103,6 @@ except KeyError as e:
     raise RuntimeError("Could not find a SECRET_KEY in environment") from e
 
 
-AWS_LOCAL_IP = get_ec2_instance_ip()
-ALLOWED_HOSTS = [AWS_LOCAL_IP, 'www.babylonbot.link', 'babylonbot.link']
 
 # Application definition
 

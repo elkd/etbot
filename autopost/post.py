@@ -13,7 +13,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     ElementNotInteractableException
 )
-from pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
+from .pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
 
 
 load_dotenv()
@@ -34,10 +34,10 @@ def upload_post(browser, content=None, img=None):
     if content is None:
         content = 'Hi today we are seeing more than 20% increate in our returns, this is just a dummy post guys.'
     if img is None:
-        img = './../../pics/sample.jpg'
+        img = './pics/sample.jpg'
 
     try:
-        wait = WebDriverWait(browser, 90)
+        wait = WebDriverWait(browser, 30)
 
         open_postform_btn = wait.until(ec.visibility_of_element_located((
             By.CSS_SELECTOR,
@@ -103,10 +103,10 @@ def run_upload_task():
     #except NoSuchElementException as e: pass
     try:
         login(browser)
-    except TimeoutException as e:
-        sleep(30)
-        login(browser)
+    except Exception as e:
         print(e)
+        sleep(20)
+        browser.get('https://etoro.com/home/')
 
     browser.execute_script("window.scrollBy(0,300)","")
     upload_post(browser)

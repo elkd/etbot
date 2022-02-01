@@ -16,7 +16,13 @@ def clear_complete_profile_popup(browser):
         #complete_prof_popup = browser.find_element_by_css_selector("div#cdk-overlay-1")
         #ActionChains(browser).move_to_element(complete_prof_popup).pause(1).click(complete_prof_popup).perform()
 
-        close_btn = browser.find_element_by_xpath('//*[@id="cdk-overlay-1"]/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
+
+        #close_btn = browser.find_element_by_xpath('//*[@id="cdk-overlay-1"]/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
+        browser.switch_to().activeElement()
+        WebDriverWait.until(ec.elementToBeClickable(By.xpath("/html/body/div[6]/div[2]/div/et-dialog-container/et-post-verification/div/div[2]/div[1]/a")));
+
+        close_btn = browser.find_element_by_xpath('/html/body/div[6]/div[2]/div/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
+
         browser.execute_script("arguments[0].click();", close_btn)
 
         sleep(5)
@@ -73,6 +79,9 @@ class LoginPage:
             sleep(5)
         except Exception as e:
             print(f'Could not Login: {e}')
+            return None
+
+        return True
 
 
 class HomePage:
