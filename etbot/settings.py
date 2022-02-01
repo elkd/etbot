@@ -55,6 +55,11 @@ if DEBUG is False:
             proc.wait()
 
 
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+    CSRF_COOKIE_SECURE = True
+
+
 try:
     SECRET_KEY = env('SECRET_KEY')
 except KeyError as e:
