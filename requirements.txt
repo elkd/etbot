@@ -1,3 +1,22 @@
+#Installing Chrome Browser and graphical settings:
+#wget https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
+#sudo apt install ./google-chrome-stable_93.0.4577.82-1_amd64.deb
+#sudo apt install nodejs -y
+#sudo apt install npm x11-utils gnumeric curl unzip xvfb libxi6 libgconf-2-4 redis-server -y
+
+
+#Chrome
+#wget https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
+#sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
+
+
+#Selenim also needs driver for linux
+#Firefox
+#wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
+#sudo tar -C /usr/local/bin/ -xvf geckodriver-v0.30.0-linux64.tar.gz
+
+
+
 wheel
 selenium
 undetected-chromedriver
@@ -16,14 +35,3 @@ django-environ>=0.4.4  # https://github.com/joke2k/django-environ
 django-redis>=4.9.0  # https://github.com/niwinz/django-redis
 django_celery_beat>=1.5.0 #https://github.com/celery/django-celery-beat
 django-bootstrap-datepicker-plus #https://github.com/monim67/django-bootstrap-datepicker-plus
-
-
-
-#Selenim also needs driver for linux
-#Firefox
-#wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
-#sudo tar -C /usr/local/bin/ -xvf geckodriver-v0.30.0-linux64.tar.gz
-
-#Chrome
-#wget https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
-#sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
