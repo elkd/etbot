@@ -4,12 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from autopost.models import ScheduledPosts, EtoroUser
+from autopost.models import ScheduledPost, EtoroUser
 from autopost.post import post_now
 
 
 class CreatePostView(CreateView, LoginRequiredMixin):
-    model=ScheduledPosts
+    model=ScheduledPost
     template_name = 'autopost/new_post.html'
     #success_url = reverse_lazy('app:index')
     fields = ['content', 'image','author', 'post_time']

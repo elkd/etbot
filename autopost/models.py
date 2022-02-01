@@ -9,7 +9,7 @@ class EtoroUser(models.Model):
     notes = models.TextField(null=True, blank=True)
 
 
-class ScheduledPosts(models.Model):
+class ScheduledPost(models.Model):
     FAILED = "F"
     AWAITING = "A"
     POSTED = "P"
@@ -24,8 +24,8 @@ class ScheduledPosts(models.Model):
         related_name="creater", on_delete=models.CASCADE
     )
     author = models.ForeignKey(
-        EtoroUser, null=True, related_name="etoro_user",
-        on_delete=models.CASCADE
+        EtoroUser, related_name="etoro_user",
+        on_delete=models.CASCADE, null=True, blank=True
     )
     content = models.TextField()
     image = models.ImageField(upload_to="images/", null=True, blank=True)
@@ -36,3 +36,13 @@ class ScheduledPosts(models.Model):
     )
     status = models.CharField(max_length=1, choices=STATUS, default=AWAITING)
     post_time = models.DateTimeField(null=True, blank=True)
+
+
+class UploadReport(models.Model):
+    post = models.ForeignKey(
+            ScheduledPost,
+            related_name='reports',
+            on_delete=models.CASCADE
+        )
+    notes = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
