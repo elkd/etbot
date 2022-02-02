@@ -121,6 +121,14 @@ def upload_post(browser, post):
 def post_task(postid, pid=None):
     try:
         postid = pid
+
+        if postid is None:
+            UploadReport.objects.create(
+                    post=post,
+                    notes='Failed to Start the Uploading Process, Postid Was not passed to Celery'
+                )
+            return False
+
         post = ScheduledPost.objects.get(id=postid)
         etuser = EtoroUser.objects.get(id=post.author.id)
 
