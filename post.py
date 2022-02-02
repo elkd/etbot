@@ -13,7 +13,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     ElementNotInteractableException
 )
-from pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
+from autopost.pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
 
 
 load_dotenv()
