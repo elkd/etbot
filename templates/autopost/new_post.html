@@ -25,6 +25,18 @@
                 <h2 class="fs-title">Schedule your post</h2>
                 <h3 class="fs-subtitle">Post content on Etoro.com</h3>
 
+                {% if messages %}
+                     {% for message in messages %}
+                         <div class="text-center alert alert-{{ message.tags }}">
+                             {{ message|safe }}
+                         </div>
+                     {% endfor %}
+                {% endif %}
+
+                {% if form.errors %}
+                    <p>The form information is incorrent, please cross-check everything</p>
+                {% endif %}
+
                 <textarea name="content" cols="40" rows="10" required="" id="id_content" placeholder="Write the content...."></textarea>
 
                 {{ form.image }}
@@ -38,7 +50,7 @@
                 <input type="submit" value="Submit" class="action-button">
                 </br>
                 </br>
-                <a href='/tAzaOQ7K1XqSxnM6b7/autopost/etorouser/add/'> <small> Add new Etoro User </small></a>
+                <a href='/tAzaOQ7K1XqSxnM6b7/'><small>Configure Users and Posts</small></a>
 
             </fieldset>
         </form>
