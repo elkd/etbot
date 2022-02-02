@@ -13,10 +13,11 @@ from selenium.common.exceptions import (
     TimeoutException,
     ElementNotInteractableException
 )
-from .pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
+from pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
 
 
 load_dotenv()
+
 
 def login(browser, username=None, password=None):
     login_page = LoginPage(browser)

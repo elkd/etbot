@@ -31,7 +31,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path(settings.ADMIN_URL, admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('posting-schedule/', post_list_view),
-    path('posting-schedule/new/', CreatePostView.as_view()),
+    path('posting-schedule/', post_list_view, name='list_posts'),
+    path('posting-schedule/new/', CreatePostView.as_view(), name='new_post'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

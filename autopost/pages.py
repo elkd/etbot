@@ -18,8 +18,11 @@ def clear_complete_profile_popup(browser):
 
 
         #close_btn = browser.find_element_by_xpath('//*[@id="cdk-overlay-1"]/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
-        browser.switch_to().activeElement()
-        WebDriverWait.until(ec.elementToBeClickable(By.xpath("/html/body/div[6]/div[2]/div/et-dialog-container/et-post-verification/div/div[2]/div[1]/a")));
+        #browser.switch_to().activeElement()
+        #WebDriverWait.until(ec.visibility_of_element_located((
+        #    By.XPATH,
+        #    "/html/body/div[6]/div[2]/div/et-dialog-container/et-post-verification/div/div[2]/div[1]/a"
+        #)));
 
         close_btn = browser.find_element_by_xpath('/html/body/div[6]/div[2]/div/et-dialog-container/et-post-verification/div/div[2]/div[1]/a')
 
