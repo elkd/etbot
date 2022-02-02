@@ -26,8 +26,8 @@ class CreatePostView(CreateView, LoginRequiredMixin):
         self.object = form.save()
 
         post_task.apply_async(
-            (self.object.id),
-            eta=self.object.post_time
+            kwargs={"pid":self.object.id},
+            eta=self.object.post_time,
         )
         return HttpResponseRedirect(self.get_success_url())
 

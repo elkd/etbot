@@ -119,18 +119,18 @@ def upload_post(browser, post):
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=10 * 60)  # you can determine the max_retries here
-def post_task(postid):
+def post_task(postid, pid=None):
     try:
+        postid = pid
+        post = ScheduledPost.objects.get(id=postid)
+        etuser = EtoroUser.objects.get(id=post.author.id)
+
         UploadReport.objects.create(
                 post=post,
                 notes='Starting the Uploading Process, Task is kickstarted'
             )
 
-        post = ScheduledPost.objects.get(id=postid)
-        etuser = EtoroUser.objects.get(id=post.author.id)
-
         options = uc.ChromeOptions()
-
         options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
 
