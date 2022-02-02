@@ -33,7 +33,7 @@ def login(browser, username=None, password=None):
 
 
 def upload_post(browser, post):
-    sleep(10)
+    sleep(17)
 
     if post.content is None:
         UploadReport.objects.create(
@@ -57,7 +57,7 @@ def upload_post(browser, post):
                 notes=f'Uploading in Progress, Etoro Upload Form is Opened...'
             )
 
-        sleep(10)
+        sleep(19)
         content_input = wait.until(ec.visibility_of_element_located((
             By.CSS_SELECTOR,
             'textarea.write-post-textarea.ng-pristine.ng-valid.ng-touched'
@@ -108,7 +108,6 @@ def upload_post(browser, post):
         sleep(16)
         browser.execute_script("window.scrollBy(0,200)","")
         #wait.until_not(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
-        upload_post(browser, post)
 
     except Exception as e:
         UploadReport.objects.create(
@@ -118,7 +117,7 @@ def upload_post(browser, post):
         sleep(30)
 
 
-@shared_task(bind=True, max_retries=3, default_retry_delay=10 * 60)  # you can determine the max_retries here
+@shared_task(bind=True, max_retries=3, default_retry_delay=10 * 60)
 def post_task(postid, pid=None):
     try:
         postid = pid
@@ -130,12 +129,11 @@ def post_task(postid, pid=None):
                 notes='Starting the Uploading Process, Task is kickstarted'
             )
 
-        options = uc.ChromeOptions()
-        options.add_argument('--user-data-dir=ChromeBotProfile')
-        options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option('debuggerAddress', 'localhost:9222')
+        browser = webdriver.Chrome(options=options)
 
-        browser = uc.Chrome(options=options)
-        browser.implicitly_wait(60)
+        browser.implicitly_wait(30)
         browser.maximize_window()
 
         UploadReport.objects.create(
@@ -153,6 +151,7 @@ def post_task(postid, pid=None):
             sleep(20)
             browser.get('https://etoro.com/home/')
 
+        sleep(23)
         browser.execute_script("window.scrollBy(0,300)", "")
 
         UploadReport.objects.create(
