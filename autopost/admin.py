@@ -8,5 +8,5 @@ admin.site.register(EtoroUser)
 admin.site.register(UploadReport)
 
 
-admin.site.unregister(User)
+#admin.site.unregister(User)
 admin.site.unregister(Group)
