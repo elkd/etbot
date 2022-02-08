@@ -1,9 +1,8 @@
 import itertools
-from slugify import slugify
+from django.utils.text import slugify
 
 from django.db import models
 from django.conf import settings
-
 
 
 class EtoroUser(models.Model):
@@ -61,8 +60,7 @@ class ScheduledPost(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = first_slug = slugify(f"{self.content[:40]}",
-                                to_lower=True, max_length=300)
+            self.slug = first_slug = slugify(self.content[:40])
 
             for x in itertools.count(1):
                 if not Classified.objects.filter(slug=self.slug).exists():
