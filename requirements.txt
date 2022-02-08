@@ -1,20 +1,14 @@
 #Installing Chrome Browser and graphical settings:
-#wget https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
-#sudo apt install ./google-chrome-stable_93.0.4577.82-1_amd64.deb
 #sudo apt install nodejs -y
-#sudo apt install npm x11-utils gnumeric curl unzip xvfb libxi6 libgconf-2-4 redis-server -y
+#sudo apt install npm zip unzip x11-utils gnumeric curl xvfb libxi6 libgconf-2-4 redis-server -y
 
+#Chrome Browser
+#wget http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_93.0.4577.82-1_amd64.deb
+#sudo apt install ./google-chrome-stable_93.0.4577.82-1_amd64.deb -y
 
-#Chrome
-#wget https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
+#ChromeDriver
+#wget https://chromedriver.storage.googleapis.com/93.0.4577.63/chromedriver_linux64.zip
 #sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
-
-
-#Selenim also needs driver for linux
-#Firefox
-#wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
-#sudo tar -C /usr/local/bin/ -xvf geckodriver-v0.30.0-linux64.tar.gz
-
 
 
 wheel
