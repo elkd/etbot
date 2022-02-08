@@ -1,5 +1,9 @@
+import itertools
+from slugify import slugify
+
 from django.db import models
 from django.conf import settings
+
 
 
 class EtoroUser(models.Model):
@@ -41,8 +45,29 @@ class ScheduledPost(models.Model):
     status = models.CharField(max_length=1, choices=STATUS, default=AWAITING)
     post_time = models.DateTimeField(null=True, blank=True)
 
+
+    class Meta:
+        ordering = ("-timestamp",)
+        verbose_name = "ScheduledPost"
+        verbose_name_plural = "ScheduledPosts"
+
     def __str__(self):
         return self.content[:30]
+
+    def get_absolute_url(self):
+        pass
+        #I haven't defined the url yet
+        #return reverse('autopost:post_details', args=[self.slug])
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = first_slug = slugify(f"{self.content[:40]}",
+                                to_lower=True, max_length=300)
+
+            for x in itertools.count(1):
+                if not Classified.objects.filter(slug=self.slug).exists():
+                    break
+                self.slug = '%s-%d' % (first_slug, x)
 
 
 
@@ -56,5 +81,8 @@ class UploadReport(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
+    class Meta:
+        ordering = ("-timestamp",)
+
     def __str__(self):
-        return self.notes[:30]
+        return self.notes[:40]

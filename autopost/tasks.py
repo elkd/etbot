@@ -2,6 +2,8 @@ import os
 from time import sleep
 
 from celery import shared_task
+from easyprocess import EasyProcess
+from pyvirtualdisplay.smartdisplay import SmartDisplay
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -27,9 +29,34 @@ def login(browser, username=None, password=None):
                 post=post,
                 notes=f'Uploading Failed, Username or Password is empty'
             )
-        return False
+        return None
 
-    login_page.login(username, password)
+    return login_page.login(username, password)
+
+
+def start_browser(mode='simple'):
+
+    if mode == 'human':
+        options = webdriver.ChromeOptions()
+        #options.add_argument('--user-data-dir=ChromeBotProfile')
+        #options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
+        #options.add_experimental_option('debuggerAddress', 'localhost:9222')
+        browser = webdriver.Chrome(options=options)
+
+        browser.implicitly_wait(30)
+        browser.maximize_window()
+    else:
+        options = uc.ChromeOptions()
+        options = webdriver.ChromeOptions()
+        browser = webdriver.Chrome(options=options)
+
+        browser.implicitly_wait(30)
+
+    UploadReport.objects.create(
+            post=post,
+            notes='Upload in progress, GUI browser has been opened and maximized'
+        )
+    return browser
 
 
 def upload_post(browser, post):
@@ -51,27 +78,40 @@ def upload_post(browser, post):
         )))
         open_postform_btn.click()
 
-
         UploadReport.objects.create(
                 post=post,
                 notes=f'Uploading in Progress, Etoro Upload Form is Opened...'
             )
-
         sleep(19)
-        content_input = wait.until(ec.visibility_of_element_located((
-            By.CSS_SELECTOR,
-            'textarea.write-post-textarea.ng-pristine.ng-valid.ng-touched'
-        )))
 
-        sleep(9)
-        content_input.send_keys(post.content)
+        try:
+            content_input = wait.until(ec.visibility_of_element_located((
+                By.CSS_SELECTOR,
+                'textarea.write-post-textarea.ng-pristine.ng-valid.ng-touched'
+            )))
+            sleep(14)
+            content_input.send_keys(post.content)
+
+        except (
+                UnexpectedAlertPresentException,
+                NoSuchElementException,
+                ElementNotInteractableException )  as e:
+
+            UploadReport.objects.create(
+                    post=post,
+                    notes=f'Failed to continue the Upload, A known Exception was captured: {e} Bot will Retry again'
+                )
+            clear_complete_profile_popup(browser)
+
+            sleep(16)
+            browser.execute_script("window.scrollBy(0,200)","")
+            #wait.until_not(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
 
         UploadReport.objects.create(
                 post=post,
                 notes=f'Uploading in Progress, Post Content has been pasted on the Etoro form...'
             )
         sleep(19)
-
         #content_input.send_keys(7 * Keys.BACKSPACE)
 
         if post.image is not None:
@@ -93,26 +133,10 @@ def upload_post(browser, post):
             )
         #self.browser.get('https://www.etoro.com/accounts/logout/')
 
-    except (
-            TimeoutException,
-            UnexpectedAlertPresentException,
-            NoSuchElementException,
-            ElementNotInteractableException )  as e:
-
-        UploadReport.objects.create(
-                post=post,
-                notes=f'Failed to continue the Upload, A known Exception was captured: {e} Bot will Retry again'
-            )
-        clear_complete_profile_popup(browser)
-
-        sleep(16)
-        browser.execute_script("window.scrollBy(0,200)","")
-        #wait.until_not(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
-
     except Exception as e:
         UploadReport.objects.create(
                 post=post,
-                notes=f'Failed to Finish the Upload, The browser will close. This Exception was captured: {e}'
+                notes=f'Failed to Finish the Upload, The browser will close. Exception: {e} '
             )
         sleep(30)
 
@@ -131,44 +155,42 @@ def post_task(postid, pid=None):
 
         post = ScheduledPost.objects.get(id=postid)
         etuser = EtoroUser.objects.get(id=post.author.id)
-
         UploadReport.objects.create(
                 post=post,
                 notes='Starting the Uploading Process, Task is kickstarted'
             )
 
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('debuggerAddress', 'localhost:9222')
-        browser = webdriver.Chrome(options=options)
+        with SmartDisplay() as disp:
+            with EasyProcess(["xmessage", "etbot"]):
+                img = disp.waitgrab()
+                browser = start_browser(mode='human')
+                try:
+                    etoro_session = login(browser, etuser.username, etuser.password)
+                except Exception as e:
+                    UploadReport.objects.create(
+                            post=post,
+                            notes='Login did not complete, possibly because the account is authenticated already!'
+                        )
+                    sleep(20)
+                    browser.get('https://etoro.com/home/')
 
-        browser.implicitly_wait(30)
-        browser.maximize_window()
+                if etoro_session is not None:
+                    sleep(23)
+                    browser.execute_script("window.scrollBy(0,300)", "")
 
-        UploadReport.objects.create(
-                post=post,
-                notes='Upload in progress, GUI browser has been opened and maximized'
-            )
+                    UploadReport.objects.create(
+                            post=post,
+                            notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
+                        )
+                    upload_post(browser, post)
+                else:
+                    UploadReport.objects.create(
+                            post=post,
+                            notes='Failed to Login, bot could not authenticate, Auto-Uploading is terminated'
+                        )
+                browser.close()
 
-        try:
-            login(browser, etuser.username, etuser.password)
-        except Exception as e:
-            UploadReport.objects.create(
-                    post=post,
-                    notes='Login did not complete, possibly because the account is authenticated already!'
-                )
-            sleep(20)
-            browser.get('https://etoro.com/home/')
-
-        sleep(23)
-        browser.execute_script("window.scrollBy(0,300)", "")
-
-        UploadReport.objects.create(
-                post=post,
-                notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
-            )
-
-        upload_post(browser, post)
-        browser.close()
+        img.save(f"xmessage-{post.slug}.png")
 
     except Exception as e:
         UploadReport.objects.create(
