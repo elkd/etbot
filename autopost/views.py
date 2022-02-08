@@ -1,15 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
+from django.views.generic import RedirectView, TemplateView
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 from autopost.models import ScheduledPost, EtoroUser
 from autopost.tasks import post_task
 
 
-class CreatePostView(CreateView, LoginRequiredMixin):
+class HomepageView(TemplateView):
+    template_name = 'home.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('new_post')
+        else:
+            context = self.get_context_data(**kwargs)
+            return self.render_to_response(context)
+
+
+class CreatePostView(LoginRequiredMixin, CreateView):
     model=ScheduledPost
     template_name = 'autopost/new_post.html'
     success_url = reverse_lazy('new_post')

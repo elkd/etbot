@@ -21,7 +21,7 @@ from autopost.models import ScheduledPost, EtoroUser, UploadReport
 
 
 
-def login(browser, username=None, password=None):
+def login(browser, username=None, password=None, post=None):
     login_page = LoginPage(browser)
 
     if username is None and password is None:
@@ -47,13 +47,11 @@ def start_browser(mode='simple'):
         # Lets open amazon in the first tab
         browser.get('https://sell.amazon.com/beginners-guide')
         # Lets open https://www.bing.com/ in the second tab
-        browser.execute_script("window.open('about:blank', 
-                                  'secondtab');")
+        browser.execute_script("window.open('about:blank', 'secondtab');")
         browser.switch_to.window("secondtab")
         browser.get('https://www.bing.com/')
         # Lets open https://www.facebook.com/ in the third tab
-        browser.execute_script("window.open('about:blank', 
-                                  'thirdtab');")
+        browser.execute_script("window.open('about:blank', 'thirdtab');")
         browser.switch_to.window("thirdtab")
 
         browser.maximize_window()
@@ -178,7 +176,7 @@ def post_task(postid, pid=None):
                 browser = start_browser(mode='human')
                 etoro_session = None
                 try:
-                    etoro_session = login(browser, etuser.username, etuser.password)
+                    etoro_session = login(browser, etuser.username, etuser.password, post)
                 except Exception as e:
                     UploadReport.objects.create(
                             post=post,
@@ -212,6 +210,8 @@ def post_task(postid, pid=None):
     except Exception as e:
         UploadReport.objects.create(
             post=post,
-            notes=f'Failed to Complete the Upload Task; Exception: {e}'
+            notes=f'Failed to Complete the Upload, Celery is shutting down; Exception: {e}'
         )
-        self.retry(exc=e, countdown=180)  # the task goes back to the queue
+        #can create a method to retry:
+        #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
+        #retry(exc=e, countdown=180)  # the task goes back to the queue

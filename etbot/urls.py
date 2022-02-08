@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView, TemplateView
 from django.conf.urls.static import static
 
-from autopost.views import post_list_view, CreatePostView
+from autopost.views import post_list_view, CreatePostView, HomepageView
 
 
 admin.site.site_header = "BabylonBot Dashboard"
@@ -28,7 +28,7 @@ admin.site.index_title = "Welcome to BabylonBot Admin Dashboard"
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', HomepageView.as_view(), name='home'),
     path(settings.ADMIN_URL, admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('posting-schedule/', post_list_view, name='list_posts'),
