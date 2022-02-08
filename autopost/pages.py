@@ -67,23 +67,27 @@ class LoginPage:
         self.browser.get('https://www.etoro.com/login/')
 
     def login(self, username, password):
-        try:
-            username_input = self.browser.find_element_by_id("username") or self.browser.find_element_by_css_selector("input[name='username']")
-            password_input = self.browser.find_element_by_id("password") or self.browser.find_element_by_css_selector("input[name='password']")
+        sleep(8)
+        expected_title = ["eToro", "Login", "Various Ways", "Sign Into", "Your Account"]
 
-            username_input.send_keys(20 * Keys.BACKSPACE)
-            username_input.send_keys(username)
-            sleep(5)
-            #password_input.send_keys(20 * Keys.BACKSPACE)
-            password_input.send_keys(password)
-            sleep(5)
-            login_button = self.browser.find_element_by_xpath("//button[@class='button-default blue-btn']")
-            login_button.click()
-            sleep(5)
-        except Exception as e:
-            print(f'Could not Login: {e}')
+        if not any(word in self.browser.title for word in expected_title):
             return None
 
+        username_input = self.browser.find_element_by_id("username") or self.browser.find_element_by_css_selector("input[name='username']")
+        password_input = self.browser.find_element_by_id("password") or self.browser.find_element_by_css_selector("input[name='password']")
+
+        username_input.clear()
+        sleep(12)
+        username_input.send_keys(username)
+
+        sleep(11)
+        password_input.clear()
+        sleep(4)
+        password_input.send_keys(password)
+        sleep(9)
+        login_button = self.browser.find_element_by_xpath("//button[@class='button-default blue-btn']")
+        login_button.click()
+        sleep(5)
         return True
 
 
