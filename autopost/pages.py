@@ -88,7 +88,7 @@ class LoginPage:
         login_button = self.browser.find_element_by_xpath("//button[@class='button-default blue-btn']")
         login_button.click()
         sleep(5)
-        return browser.get_cookies()
+        return self.browser.get_cookies()
 
 
 class HomePage:

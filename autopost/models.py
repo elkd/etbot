@@ -51,7 +51,7 @@ class ScheduledPost(models.Model):
         verbose_name_plural = "ScheduledPosts"
 
     def __str__(self):
-        return self.content[:30]
+        return self.content[:50]
 
     def get_absolute_url(self):
         pass
@@ -63,10 +63,10 @@ class ScheduledPost(models.Model):
             self.slug = first_slug = slugify(self.content[:40])
 
             for x in itertools.count(1):
-                if not Classified.objects.filter(slug=self.slug).exists():
+                if not ScheduledPost.objects.filter(slug=self.slug).exists():
                     break
                 self.slug = '%s-%d' % (first_slug, x)
-
+        super().save(*args, **kwargs)
 
 
 class UploadReport(models.Model):
@@ -76,6 +76,7 @@ class UploadReport(models.Model):
             on_delete=models.CASCADE
         )
     notes = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to="images/uploadreport/", null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 

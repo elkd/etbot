@@ -16,9 +16,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException
 )
 from .pages import LoginPage, clear_complete_profile_popup, clear_notif_popup
-
 from autopost.models import ScheduledPost, EtoroUser, UploadReport
-
 
 
 def login(browser, username=None, password=None, post=None):
@@ -35,7 +33,6 @@ def login(browser, username=None, password=None, post=None):
 
 
 def start_browser(mode='simple'):
-
     if mode == 'human':
         options = webdriver.ChromeOptions()
         options.add_argument('--user-data-dir=ChromeBotProfile')
@@ -61,11 +58,6 @@ def start_browser(mode='simple'):
         browser = webdriver.Chrome(options=options)
 
         browser.implicitly_wait(30)
-
-    UploadReport.objects.create(
-            post=post,
-            notes='Upload in progress, GUI browser has been opened and maximized'
-        )
     return browser
 
 
@@ -141,7 +133,7 @@ def upload_post(browser, post):
                 post=post,
                 notes=f'Successfully Uploaded the post On Etoro Website'
             )
-        #self.browser.get('https://www.etoro.com/accounts/logout/')
+        #browser.get('https://www.etoro.com/accounts/logout/')
 
     except Exception as e:
         UploadReport.objects.create(
@@ -152,66 +144,60 @@ def upload_post(browser, post):
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=10 * 60)
-def post_task(postid, pid=None):
-    try:
-        postid = pid
+def post_task(self, postid=None):
+    if postid is None:
+        return None
 
-        if postid is None:
-            UploadReport.objects.create(
-                    post=post,
-                    notes='Failed to Start the Uploading Process, Postid Was not passed to Celery'
-                )
-            return False
+    post = ScheduledPost.objects.get(id=postid)
+    etuser = EtoroUser.objects.get(id=post.author.id)
+    UploadReport.objects.create(
+            post=post,
+            notes='Starting the Uploading Process...'
+        )
 
-        post = ScheduledPost.objects.get(id=postid)
-        etuser = EtoroUser.objects.get(id=post.author.id)
+    with SmartDisplay() as disp:
+        #img = disp.waitgrab()
+        browser = start_browser(mode='human')
         UploadReport.objects.create(
                 post=post,
-                notes='Starting the Uploading Process, Task is kickstarted'
+                notes='Upload in progress, GUI browser has been opened and maximized'
             )
+        etoro_session = None
+        try:
+            etoro_session = login(browser, etuser.username, etuser.password, post)
+        except Exception as e:
+            UploadReport.objects.create(
+                    post=post,
+                    notes='Login did not complete, possibly because the account is authenticated already!'
+                )
+            sleep(11)
+            browser.get('https://etoro.com/home/')
+            expected_title = ["eToro", "etoro"]
 
-        with SmartDisplay() as disp:
-            with EasyProcess(["xmessage", "etbot"]):
-                img = disp.waitgrab()
-                browser = start_browser(mode='human')
-                etoro_session = None
-                try:
-                    etoro_session = login(browser, etuser.username, etuser.password, post)
-                except Exception as e:
-                    UploadReport.objects.create(
-                            post=post,
-                            notes='Login did not complete, possibly because the account is authenticated already!'
-                        )
-                    sleep(11)
-                    browser.get('https://etoro.com/home/')
-                    expected_title = ["eToro", "etoro"]
+            if any(word in browser.title for word in expected_title):
+                etoro_session = browser.get_cookies()
 
-                    if any(word in self.browser.title for word in expected_title):
-                        etoro_session = browser.get_cookies()
+        if etoro_session is not None:
+            sleep(13)
+            browser.execute_script("window.scrollBy(0,300)", "")
 
-                if etoro_session is not None:
-                    sleep(13)
-                    browser.execute_script("window.scrollBy(0,300)", "")
+            UploadReport.objects.create(
+                    post=post,
+                    notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
+                )
 
-                    UploadReport.objects.create(
-                            post=post,
-                            notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
-                        )
-                    upload_post(browser, post)
-                else:
-                    UploadReport.objects.create(
-                            post=post,
-                            notes='Failed to Login, bot could not authenticate, Auto-Uploading is terminated'
-                        )
-                browser.close()
-
-        img.save(f"xmessage-{post.slug}.png")
-
-    except Exception as e:
-        UploadReport.objects.create(
-            post=post,
-            notes=f'Failed to Complete the Upload, Celery is shutting down; Exception: {e}'
-        )
-        #can create a method to retry:
-        #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
-        #retry(exc=e, countdown=180)  # the task goes back to the queue
+            try:
+                upload_post(browser, post)
+            except Exception as e:
+                UploadReport.objects.create(
+                    post=post,
+                    notes=f'Failed to Complete the Upload, Celery will retry; Exception: {e}'
+                )
+                #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
+                self.retry(exc=e, countdown=180)  # the task goes back to the queue
+        else:
+            UploadReport.objects.create(
+                    post=post,
+                    notes='Failed to Login, could not authenticate, Auto-Uploading is terminated'
+                )
+        browser.close()
