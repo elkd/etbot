@@ -71,7 +71,7 @@ class LoginPage:
         expected_title = ["eToro", "Login", "Various Ways", "Sign Into", "Your Account"]
 
         if not any(word in self.browser.title for word in expected_title):
-            return None
+            return (None, self.browser.title)
 
         username_input = self.browser.find_element_by_id("username") or self.browser.find_element_by_css_selector("input[name='username']")
         password_input = self.browser.find_element_by_id("password") or self.browser.find_element_by_css_selector("input[name='password']")
@@ -88,7 +88,7 @@ class LoginPage:
         login_button = self.browser.find_element_by_xpath("//button[@class='button-default blue-btn']")
         login_button.click()
         sleep(5)
-        return self.browser.get_cookies()
+        return (True, self.browser.title)
 
 
 class HomePage:

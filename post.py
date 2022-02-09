@@ -35,7 +35,7 @@ def upload_post(browser, content=None, img=None):
     if content is None:
         content = 'Hi today we are seeing more than 20% increate in our returns, this is just a dummy post guys.'
     if img is None:
-        img = './pics/sample.jpg'
+        img = 'media/images/aaa11-env.jpeg'
 
     try:
         wait = WebDriverWait(browser, 30)
@@ -92,7 +92,7 @@ def upload_post(browser, content=None, img=None):
 def run_upload_task():
     options = uc.ChromeOptions()
 
-    options.add_argument('--user-data-dir=ChromeBotProfile')
+    #options.add_argument('--user-data-dir=ChromeBotProfile')
     options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
 
     browser = uc.Chrome(options=options)

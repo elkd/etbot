@@ -1,4 +1,6 @@
 import os
+import uuid
+import traceback
 from time import sleep
 
 from celery import shared_task
@@ -61,8 +63,8 @@ def start_browser(mode='simple'):
     return browser
 
 
-def upload_post(browser, post):
-    sleep(17)
+def upload_post(browser, post, retry=0):
+    sleep(39)
 
     if post.content is None:
         UploadReport.objects.create(
@@ -74,10 +76,15 @@ def upload_post(browser, post):
     try:
         wait = WebDriverWait(browser, 30)
 
-        open_postform_btn = wait.until(ec.visibility_of_element_located((
-            By.CSS_SELECTOR,
-            'button.button-text.et-font-m'
-        )))
+        #open_postform_btn = wait.until(ec.presence_of_element_located((
+        #    By.CSS_SELECTOR,
+        #    'button.button-text.et-font-m'
+        #)))
+        open_postform_btn = browser.find_element_by_css_selector(
+                'button.button-text.et-font-m'
+            ) or browser.find_element_by_css_selector(
+                    'a.write-new-post.sprite post'
+                )
         open_postform_btn.click()
 
         UploadReport.objects.create(
@@ -87,7 +94,7 @@ def upload_post(browser, post):
         sleep(19)
 
         try:
-            content_input = wait.until(ec.visibility_of_element_located((
+            content_input = wait.until(ec.presence_of_element_located((
                 By.CSS_SELECTOR,
                 'textarea.write-post-textarea.ng-pristine.ng-valid.ng-touched'
             )))
@@ -101,12 +108,12 @@ def upload_post(browser, post):
 
             UploadReport.objects.create(
                     post=post,
-                    notes=f'Failed to continue the Upload, A known Exception was captured: {e} Bot will Retry again'
+                    notes=f'Failed to Upload, known Exception captured: {traceback.format_exc()} Form is blocked, trying bypass...'
                 )
             clear_complete_profile_popup(browser)
 
             sleep(16)
-            browser.execute_script("window.scrollBy(0,200)","")
+            #browser.execute_script("window.scrollBy(0,200)","")
             #wait.until_not(ec.visibility_of_element_located((By.ID, "cdk-overlay-0")))
 
         UploadReport.objects.create(
@@ -134,11 +141,30 @@ def upload_post(browser, post):
                 notes=f'Successfully Uploaded the post On Etoro Website'
             )
         #browser.get('https://www.etoro.com/accounts/logout/')
-
-    except Exception as e:
+    except TimeoutException as e:
+        img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+        browser.save_screenshot(img)
         UploadReport.objects.create(
                 post=post,
-                notes=f'Failed to Finish the Upload, The browser will close. Exception: {e} '
+                image=img,
+                notes=f'Failed to Upload, Browser: {browser.title}, Windows Size: {browser.get_window_size()}, Exception: {traceback.format_exc()} Retrying...'
+            )
+
+        if retry < 3:
+            retry+=1
+            browser.refresh()
+            #Etoro home has multiple windows object in an array eg windows[0] could be main or other
+            #browser.execute_script("window.scrollBy(0,200)","")
+            sleep(30)
+            upload_post(browser, post, retry)
+
+    except Exception as e:
+        img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+        browser.save_screenshot(img)
+        UploadReport.objects.create(
+                post=post,
+                image=img,
+                notes=f'Failed to Upload for Unknown reason, Title: {browser.title}, Cookies: {browser.get_cookies()}, Exception: {traceback.format_exc()}'
             )
         sleep(30)
 
@@ -162,9 +188,10 @@ def post_task(self, postid=None):
                 post=post,
                 notes='Upload in progress, GUI browser has been opened and maximized'
             )
-        etoro_session = None
+
+        res = title = None
         try:
-            etoro_session = login(browser, etuser.username, etuser.password, post)
+            res, title = login(browser, etuser.username, etuser.password, post)
         except Exception as e:
             UploadReport.objects.create(
                     post=post,
@@ -174,12 +201,16 @@ def post_task(self, postid=None):
             browser.get('https://etoro.com/home/')
             expected_title = ["eToro", "etoro"]
 
-            if any(word in browser.title for word in expected_title):
-                etoro_session = browser.get_cookies()
+            if browser.title == "eToro":
+                res = 'home'
+            elif any(word in browser.title for word in expected_title):
+                res = 'login'
+            else:
+                title = browser.title
 
-        if etoro_session is not None:
+        if res is not None:
             sleep(13)
-            browser.execute_script("window.scrollBy(0,300)", "")
+            #browser.execute_script("window.scrollBy(0,300)", "")
 
             UploadReport.objects.create(
                     post=post,
@@ -189,15 +220,21 @@ def post_task(self, postid=None):
             try:
                 upload_post(browser, post)
             except Exception as e:
+                img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+                browser.save_screenshot(img)
                 UploadReport.objects.create(
                     post=post,
-                    notes=f'Failed to Complete the Upload, Celery will retry; Exception: {e}'
+                    image=img,
+                    notes=f'Failed to Complete the Upload, Celery will retry; Exception: {traceback.format_exc()}'
                 )
                 #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
                 self.retry(exc=e, countdown=180)  # the task goes back to the queue
         else:
+            img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+            browser.save_screenshot(img)
             UploadReport.objects.create(
                     post=post,
-                    notes='Failed to Login, could not authenticate, Auto-Uploading is terminated'
+                    image=img,
+                    notes=f'Failed to Login; Browser title is: {title}, Cookies are: browser.get_cookies()'
                 )
         browser.close()
