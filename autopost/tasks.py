@@ -36,31 +36,33 @@ def login(browser, username=None, password=None, post=None):
 
 def start_browser(mode='simple'):
     if mode == 'human':
-        options = webdriver.ChromeOptions()
+        options = uc.ChromeOptions()
+
         options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        #options.add_experimental_option('debuggerAddress', 'localhost:9222')
-        browser = webdriver.Chrome(options=options)
+        browser = uc.Chrome(options=options, version_main=97)
 
         browser.implicitly_wait(30)
         # Lets open amazon in the first tab
-        browser.get('https://sell.amazon.com/beginners-guide')
+        #browser.get('https://sell.amazon.com/beginners-guide')
         # Lets open https://www.bing.com/ in the second tab
-        browser.execute_script("window.open('about:blank', 'secondtab');")
-        browser.switch_to.window("secondtab")
-        browser.get('https://www.bing.com/')
+        #browser.execute_script("window.open('about:blank', 'secondtab');")
+        #browser.switch_to.window("secondtab")
+        #browser.get('https://www.bing.com/')
         # Lets open https://www.facebook.com/ in the third tab
-        browser.execute_script("window.open('about:blank', 'thirdtab');")
-        browser.switch_to.window("thirdtab")
-
+        #browser.execute_script("window.open('about:blank', 'thirdtab');")
+        #browser.switch_to.window("thirdtab")
         browser.maximize_window()
+        return browser
     else:
         options = uc.ChromeOptions()
-        options = webdriver.ChromeOptions()
-        browser = webdriver.Chrome(options=options)
 
+        options.add_argument('--user-data-dir=ChromeBotProfile')
+        options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
+        browser = uc.Chrome(options=options, version_main=97)
         browser.implicitly_wait(30)
-    return browser
+        browser.maximize_window()
+        return browser
 
 
 def upload_post(browser, post, retry=0):
