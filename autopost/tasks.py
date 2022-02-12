@@ -144,7 +144,7 @@ def upload_post(browser, post, retry=0):
             )
         #browser.get('https://www.etoro.com/accounts/logout/')
     except TimeoutException as e:
-        img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+        img = f'/home/ubuntu/etbot/media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
         browser.save_screenshot(img)
         UploadReport.objects.create(
                 post=post,
@@ -161,7 +161,7 @@ def upload_post(browser, post, retry=0):
             upload_post(browser, post, retry)
 
     except Exception as e:
-        img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+        img = f'/home/ubuntu/etbot/media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
         browser.save_screenshot(img)
         UploadReport.objects.create(
                 post=post,
@@ -222,7 +222,7 @@ def post_task(self, postid=None):
             try:
                 upload_post(browser, post)
             except Exception as e:
-                img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+                img = f'/home/ubuntu/etbot/media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
                 browser.save_screenshot(img)
                 UploadReport.objects.create(
                     post=post,
@@ -232,7 +232,7 @@ def post_task(self, postid=None):
                 #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
                 self.retry(exc=e, countdown=180)  # the task goes back to the queue
         else:
-            img = f'media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+            img = f'/home/ubuntu/etbot/media/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
             browser.save_screenshot(img)
             UploadReport.objects.create(
                     post=post,
