@@ -30,10 +30,12 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+pytest.ini
 htmlcov/
 .pytest_cache/
 .tox/
 .coverage
+.coveragerc
 .cache
 nosetests.xml
 coverage.xml

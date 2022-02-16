@@ -15,7 +15,6 @@ class EtoroUser(models.Model):
         return self.username
 
 
-
 class ScheduledPost(models.Model):
     FAILED = "F"
     AWAITING = "A"

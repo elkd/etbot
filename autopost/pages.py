@@ -64,14 +64,28 @@ def clear_notif_popup(browser):
 class LoginPage:
     def __init__(self, browser):
         self.browser = browser
-        self.browser.get('https://www.etoro.com/login/')
+        self.success = False
+        #Login page loads a lot of unnecessary static files, so ignore that
+        try:
+            self.browser.set_page_load_timeout(50)
+            self.browser.get('https://www.etoro.com/login/')
+            self.success = True
+        except:
+            try:
+                wait.until(ec.presence_of_element_located((
+                    By.ID, 'username'
+                )))
+                self.success = True
+            except:
+                self.success = False
+
 
     def login(self, username, password):
         sleep(8)
         expected_title = ["eToro", "Login", "Various Ways", "Sign Into", "Your Account"]
 
         if not any(word in self.browser.title for word in expected_title):
-            return (None, self.browser.title)
+            return None, self.browser.title
 
         username_input = self.browser.find_element_by_id("username") or self.browser.find_element_by_css_selector("input[name='username']")
         password_input = self.browser.find_element_by_id("password") or self.browser.find_element_by_css_selector("input[name='password']")
@@ -88,7 +102,7 @@ class LoginPage:
         login_button = self.browser.find_element_by_xpath("//button[@class='button-default blue-btn']")
         login_button.click()
         sleep(5)
-        return (True, self.browser.title)
+        return True, self.browser.title
 
 
 class HomePage:
