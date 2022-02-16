@@ -57,7 +57,7 @@ def start_browser(mode='simple'):
 
         options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=97)
+        browser = uc.Chrome(options=options, version_main=93)
 
         browser.implicitly_wait(30)
         # Lets open amazon in the first tab
