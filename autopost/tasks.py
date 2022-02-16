@@ -30,8 +30,8 @@ def post_task(self, postid=None):
             notes='Starting the Uploading Process...'
         )
 
-    #with SmartDisplay() as disp:
-    run_upload(post, etuser)
+    with SmartDisplay() as disp:
+        run_upload(post, etuser)
 
 
 def login(browser, username=None, password=None, post=None):
@@ -240,5 +240,3 @@ def run_upload(post, etuser):
                 notes=f'Failed to Login; Browser title is: {title}, Cookies are: {browser.get_cookies()}'
             )
     browser.close()
-
-
