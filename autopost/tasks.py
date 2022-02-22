@@ -31,14 +31,23 @@ def post_task(self, postid=None):
         )
 
     with SmartDisplay() as disp:
-        run_upload(post, etuser)
+        try:
+            run_upload(post, etuser)
+        except Exception as e:
+            img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
+            #browser.save_screenshot(img)
+            UploadReport.objects.create(
+                post=post,
+                notes=f'Failed to Complete the Upload, Celery will retry; Exception: {traceback.format_exc()}'
+            )
+            self.retry(exc=e, countdown=180)  # the task goes back to the queue
 
 
-def login(browser, username=None, password=None, post=None):
-    login_page = LoginPage(browser)
+def login(browser, username=None, password=None, post=None, timeout=50):
+    login_page = LoginPage(browser, timeout)
 
     if login_page.success is False:
-        return None, 'Login Page Failed to load in Time: 30 Seconds'
+        return None, f'Login Page Failed to load in Time: {timeout} Seconds'
 
     if username is None or password is None:
         UploadReport.objects.create(
@@ -57,7 +66,7 @@ def start_browser(mode='simple'):
 
         options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=93)
+        browser = uc.Chrome(options=options, version_main=env('CHROME_VERSION'))
 
         browser.implicitly_wait(30)
         # Lets open amazon in the first tab
@@ -76,7 +85,7 @@ def start_browser(mode='simple'):
 
         options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=97)
+        browser = uc.Chrome(options=options, version_main=env('CHROME_VERSION'))
         browser.implicitly_wait(30)
         browser.maximize_window()
         return browser
@@ -195,48 +204,40 @@ def upload_post(browser, post, retry=0):
 
 
 def run_upload(post, etuser):
-    browser = start_browser(mode='human')
-    UploadReport.objects.create(
-            post=post,
-            notes='Upload in progress, GUI browser has been opened and maximized'
-        )
-
-    res = title = None
     try:
-        res, title = login(browser, etuser.username, etuser.password, post)
-    except Exception as e:
+        browser = start_browser(mode='human')
         UploadReport.objects.create(
                 post=post,
-                notes='Login did not complete; Exception: {traceback.format_exc()}, Returned Msg: {title}'
+                notes='Upload in progress, GUI browser has been opened and maximized'
             )
 
-    if str(browser.current_url).endswith('home') or browser.title == "eToro":
-        res = browser.title
-
-    if res is not None:
-        sleep(13)
-        #browser.execute_script("window.scrollBy(0,300)", "")
-
-        UploadReport.objects.create(
-                post=post,
-                notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
-            )
+        res = title = None
         try:
-            upload_post(browser, post)
+            res, title = login(browser, etuser.username, etuser.password, post)
         except Exception as e:
+            UploadReport.objects.create(
+                    post=post,
+                    notes='Login did not complete; Exception: {traceback.format_exc()}, Returned Msg: {title}'
+                )
+
+        if str(browser.current_url).endswith('home') or browser.title == "eToro":
+            res = browser.title
+
+        if res is not None:
+            sleep(13)
+
+            UploadReport.objects.create(
+                    post=post,
+                    notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
+                )
+
+            upload_post(browser, post)
+        else:
             img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
             #browser.save_screenshot(img)
             UploadReport.objects.create(
-                post=post,
-                notes=f'Failed to Complete the Upload, Celery will retry; Exception: {traceback.format_exc()}'
-            )
-            #https://hackernoon.com/using-celery-with-multiple-queues-retries-and-scheduled-tasks-589fe9a4f9ba
-            self.retry(exc=e, countdown=180)  # the task goes back to the queue
-    else:
-        img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
-        #browser.save_screenshot(img)
-        UploadReport.objects.create(
-                post=post,
-                notes=f'Failed to Login; Browser title is: {title}, Cookies are: {browser.get_cookies()}'
-            )
-    browser.close()
+                    post=post,
+                    notes=f'Failed to Login; Browser title is: {title}, Cookies are: {browser.get_cookies()}'
+                )
+    finally:
+        browser.close()

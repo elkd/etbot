@@ -62,12 +62,12 @@ def clear_notif_popup(browser):
 
 
 class LoginPage:
-    def __init__(self, browser):
+    def __init__(self, browser, timeout):
         self.browser = browser
         self.success = False
         #Login page loads a lot of unnecessary static files, so ignore that
         try:
-            self.browser.set_page_load_timeout(50)
+            self.browser.set_page_load_timeout(timeout)
             self.browser.get('https://www.etoro.com/login/')
             self.success = True
         except:
@@ -77,6 +77,7 @@ class LoginPage:
                 )))
                 self.success = True
             except:
+                print('there is no Element with ID username on the Login page')
                 self.success = False
 
 
