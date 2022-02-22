@@ -59,14 +59,15 @@ def login(browser, username=None, password=None, post=None, timeout=50):
     return login_page.login(username, password)
 
 
-def start_browser(mode='simple'):
+def start_browser(mode='simple', profile=True):
     import undetected_chromedriver as uc
     if mode == 'human':
         options = uc.ChromeOptions()
 
-        options.add_argument('--user-data-dir=ChromeBotProfile')
+        if profile:
+            options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=env('CHROME_VERSION'))
+        browser = uc.Chrome(options=options, version_main=env.int('CHROME_VERSION'))
 
         browser.implicitly_wait(30)
         # Lets open amazon in the first tab
@@ -83,9 +84,8 @@ def start_browser(mode='simple'):
     else:
         options = uc.ChromeOptions()
 
-        options.add_argument('--user-data-dir=ChromeBotProfile')
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=env('CHROME_VERSION'))
+        browser = uc.Chrome(options=options, version_main=env.int('CHROME_VERSION'))
         browser.implicitly_wait(30)
         browser.maximize_window()
         return browser

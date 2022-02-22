@@ -27,19 +27,18 @@ def scheduled_post(etoro_user):
 
 @pytest.fixture(scope='session')
 def browser():
-    browser = start_browser(mode='human')
+    browser = start_browser(mode='human', profile=False)
     yield browser
     browser.close()
 
 
-def test_login(etoro_user, scheduled_post, browser):
+def defertest_login(etoro_user, scheduled_post, browser):
     res, title = login( browser,
         username=etoro_user.username,
         password=etoro_user.password,
         post=scheduled_post,
         timeout=20
     )
-    print(title)
 
     if str(browser.current_url).endswith('home') or browser.title == "eToro":
         res = browser.title
