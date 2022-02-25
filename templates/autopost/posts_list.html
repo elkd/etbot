@@ -1,11 +1,14 @@
 {% load static i18n %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/posts-list.css' %}">
-<title>{% trans 'Orders' %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/posts-list.css' %}">
+    <title>{% trans 'Posts' %}</title>
 {% endblock head %}
 
-{% block content %}
+
+<div class="container">
+
     <div class="items-list">
         <div class="order-toggle">
             <a class="toggle-link" href="#" id="b"> Pending </a>
@@ -15,10 +18,12 @@
         <div id="bought">
           {% for post in posts.pending %}
                   <a href="{% url 'post_detail' post.pk %}"
-                    id="{{ post.slug }}" class="card contact-card open-chat">
+                    id="{{ post.slug }}" class="post-link card contact-card w-75">
+
+                     <div class="card-body">
                         {% if post.image %}
                             <img src="{{post.image.url}}"
-                              class="rounded-circle contact-profile-avatar img-fluid">
+                              class="contact-profile-avatar img-fluid">
                         {% else %}
                             <img src="{% static 'images/nophoto.jpg' %}"
                               alt="pic" class="contact-profile-avatar img-fluid" />
@@ -35,7 +40,8 @@
                                       {{ post.author }}
                               </small>
                            </div>
-                        </div>
+                         </div>
+                       </div>
                   </a>
 
           {% empty %}
@@ -50,30 +56,32 @@
 
       <div id="sold">
           {% for post in posts.posted %}
-              <a href="{% url 'post_detail' post.pk %}"
-                id="{{ post.slug }}" class="card contact-card open-chat">
+                  <a href="{% url 'post_detail' post.pk %}"
+                    id="{{ post.slug }}" class="post-link card contact-card w-75">
+
+                     <div class="card-body">
                         {% if post.image %}
                             <img src="{{post.image.url}}"
-                              class="rounded-circle contact-profile-avatar img-fluid">
+                              class="contact-profile-avatar img-fluid">
                         {% else %}
                             <img src="{% static 'images/nophoto.jpg' %}"
                               alt="pic" class="contact-profile-avatar img-fluid" />
                         {% endif %}
 
-                    <div class="contact-card-meta">
-                        <p class="subtitle is-6"> {{ post.content|title|truncatechars:80 }} </p>
+                        <div class="contact-card-meta">
+                            <p class="subtitle is-6"> {{ post.content|title|truncatechars:80 }} </p>
 
-                        <div class="name-time-section">
-                          <small class="timestamp" id="last-timestamp">
-                            {{ post.post_time |date:'N d G:i' }}
-                          </small>
-                          <small class="msg" id="last-msg"> 
-                                  {{ post.author }}
-                          </small>
+                            <div class="name-time-section">
+                              <small class="timestamp" id="last-timestamp">
+                                {{ post.post_time |date:'N d G:i' }}
+                              </small>
+                              <small class="msg" id="last-msg"> 
+                                      {{ post.author }}
+                              </small>
+                           </div>
+                         </div>
                        </div>
-                    </div>
-              </a>
-
+                  </a>
           {% empty %}
               <div class="card">
                   <div class="card-body">
@@ -84,29 +92,27 @@
           {% endfor %}
         </div>
 
+        </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock content %}
 
-{% block extra_js %}
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-              const bToggle = document.getElementById('b');
-              bToggle.focus();
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+          const bToggle = document.getElementById('b');
+          bToggle.focus();
 
-              const bought = document.getElementById('bought');
-              const sold = document.getElementById('sold');
+          const bought = document.getElementById('bought');
+          const sold = document.getElementById('sold');
 
-              bToggle.addEventListener('click', () => {
-                  sold.style.display = 'none';
-                  bought.style.display = 'block';
-              });
-              document.getElementById('s').addEventListener('click', () => {
-                  bought.style.display = 'none';
-                  sold.style.display = 'block';
-              });
-        });
-    </script>
-{% endblock extra_js %}
+          bToggle.addEventListener('click', () => {
+              sold.style.display = 'none';
+              bought.style.display = 'block';
+          });
+          document.getElementById('s').addEventListener('click', () => {
+              bought.style.display = 'none';
+              sold.style.display = 'block';
+          });
+    });
+</script>

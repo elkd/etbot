@@ -1,0 +1,24 @@
+{% block content %}
+  <h1>Title: {{ post.title }}</h1>
+
+  <p><strong>Author:</strong> <a href="">{{ post.content }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Summary:</strong> {{ post.post_time }}</p>
+  <p><strong>ISBN:</strong> {{ post.status }}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Copies</h4>
+
+    {% for report in post.reports.all %}
+      <hr>
+      <div class="alert alert-info" role="alert">
+          {{ report.notes }} 
+          {{ report.timestamp }} 
+      </div>
+
+    {% empty %}
+      <div class="alert alert-info" role="alert">
+         There are no any uploading updates for this Post 
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
