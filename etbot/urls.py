@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView, TemplateView
 from django.conf.urls.static import static
 
-from autopost.views import post_list_view, CreatePostView, HomepageView
+from autopost.views import PostListView, CreatePostView, HomepageView, PostDetailView
 
 
 admin.site.site_header = "BabylonBot Dashboard"
@@ -31,7 +31,9 @@ urlpatterns = [
     path('', HomepageView.as_view(), name='home'),
     path(settings.ADMIN_URL, admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('posting-schedule/', post_list_view, name='list_posts'),
+
+    path('posting-schedule/', PostListView.as_view(), name='posts_list'),
     path('posting-schedule/new/', CreatePostView.as_view(), name='new_post'),
+    path('posting-schedule/<int:pk>', PostDetailView.as_view(), name='post_detail'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

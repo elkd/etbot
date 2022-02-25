@@ -3,7 +3,10 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import (
+        CreateView, UpdateView, ListView,
+        DetailView, DeleteView, TemplateView
+    )
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 from autopost.models import ScheduledPost, EtoroUser
@@ -15,10 +18,32 @@ class HomepageView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('new_post')
+            return redirect('posts_list')
         else:
             context = self.get_context_data(**kwargs)
             return self.render_to_response(context)
+
+
+
+class PostListView(LoginRequiredMixin, ListView):
+    model=ScheduledPost
+    context_object_name = 'posts'
+    template_name = 'autopost/posts_list.html'
+
+    def get_queryset(self):
+        pending = ScheduledPost.objects.filter(
+                    status='A'
+                ).order_by('-timestamp')
+
+        posted = ScheduledPost.objects.filter(
+                    status='P'
+                ).order_by('-timestamp')
+
+        return {'pending': pending, 'posted': posted}
+
+
+class PostDetailView(LoginRequiredMixin, DetailView):
+    model=ScheduledPost
 
 
 class CreatePostView(LoginRequiredMixin, CreateView):
@@ -42,7 +67,3 @@ class CreatePostView(LoginRequiredMixin, CreateView):
             eta=self.object.post_time,
         )
         return HttpResponseRedirect(self.get_success_url())
-
-
-def post_list_view(request):
-    pass
