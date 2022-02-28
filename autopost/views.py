@@ -44,6 +44,7 @@ class PostListView(LoginRequiredMixin, ListView):
 
 class PostDetailView(LoginRequiredMixin, DetailView):
     model=ScheduledPost
+    context_object_name = 'post'
 
 
 class CreatePostView(LoginRequiredMixin, CreateView):

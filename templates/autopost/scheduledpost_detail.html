@@ -1,24 +1,70 @@
-{% block content %}
-  <h1>Title: {{ post.title }}</h1>
 
-  <p><strong>Author:</strong> <a href="">{{ post.content }}</a></p> <!-- author detail link not yet defined -->
-  <p><strong>Summary:</strong> {{ post.post_time }}</p>
-  <p><strong>ISBN:</strong> {{ post.status }}</p>
+{% load static i18n %}
 
-  <div style="margin-left:20px;margin-top:20px">
-    <h4>Copies</h4>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>BabylonBot Post</title>
+        <link href="{% static 'css/page_details.css' %}" rel="stylesheet"/>
+        <link rel="stylesheet"
+          href="https://unpkg.com/swiper@8/swiper-bundle.min.css"/>
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    </head>
 
-    {% for report in post.reports.all %}
-      <hr>
-      <div class="alert alert-info" role="alert">
-          {{ report.notes }} 
-          {{ report.timestamp }} 
+    <body>
+        <div class="blog-slider">
+          <div class="blog-slider__wrp swiper-wrapper">
+
+                <div class="blog-slider__item swiper-slide">
+                  <div class="blog-slider__img">
+                    <img src="{{ post.image.url }}" alt="Post Img">
+                  </div>
+                  <div class="blog-slider__content">
+                    <span class="blog-slider__code"> {{ post.post_time }}</span>
+                    <div class="blog-slider__title">{{ post.author }}</div>
+                    <div class="blog-slider__text">{{ post.content }}</div>
+                    {% if post.status == 'A' %}
+                        <a href="#" class="blog-slider__button">PENDING</a>
+                    {% else %}
+                        <a href="#" class="blog-slider__button">POSTED</a>
+                    {% endif %}
+                  </div>
+                </div>
+                
+          </div>
+          <div class="blog-slider__pagination"></div>
+        </div>
+
+      <div class="upload-reports">
+        <h2> UPLOADING STATUS </h2>
+
+        {% for report in post.reports.all %}
+          <hr>
+          <div class="alert alert-info" role="alert">
+              {{ report.notes }} <br/>
+              {{ report.timestamp }} 
+          </div>
+
+        {% empty %}
+          <div class="alert alert-info" role="alert">
+             There are no any uploading updates for this Post yet
+          </div>
+        {% endfor %}
       </div>
+    </body>
 
-    {% empty %}
-      <div class="alert alert-info" role="alert">
-         There are no any uploading updates for this Post 
-      </div>
-    {% endfor %}
-  </div>
-{% endblock %}
+    <script type="text/javascript">
+        var swiper = new Swiper('.blog-slider', {
+              spaceBetween: 30,
+              effect: 'fade',
+              loop: true,
+              mousewheel: {
+                invert: false,
+              },
+              pagination: {
+                el: '.blog-slider__pagination',
+                clickable: true,
+              }
+         });
+    </script>
+</html>
