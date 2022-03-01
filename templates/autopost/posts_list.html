@@ -129,7 +129,7 @@
 
               <div class="project-boxes jsGridView">
                   {% for post in data.all_posts %}
-                        <div class="project-box-wrapper">
+                      <a class="project-box-wrapper" href="{% url 'post_detail' post.id %}">
                           <div class="project-box" style="background-color: #d5deff;">
                             <div class="project-box-header">
                                 <span>{{post.post_time}}</span>
@@ -172,7 +172,7 @@
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </a>
                 {% endfor %}
           </div>
         </div>

@@ -3,13 +3,14 @@
     box-sizing: border-box;
 }
 
-
 body {
     #background-image: linear-gradient(147deg, #FFE53B 0%, #417690 74%);
+    background-color: #f3f6fd;
     min-height: 100vh;
     font-family: 'Fira Sans', sans-serif;
 }
- .blog-slider {
+
+.blog-slider {
     width: 95%;
     position: relative;
     max-width: 800px;
@@ -182,7 +183,8 @@ body {
     margin-bottom: 30px;
     line-height: 1.5em;
 }
- .blog-slider__button {
+
+.blog-slider__button {
     display: inline-flex;
     background-image: linear-gradient(147deg, #79aec8 0%, #417690 74%);
     padding: 15px 35px;
