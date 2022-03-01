@@ -9,7 +9,7 @@ from django.views.generic import (
     )
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from autopost.models import ScheduledPost, EtoroUser
+from autopost.models import ScheduledPost, EtoroUser, UploadReport
 from autopost.tasks import post_task
 
 
@@ -27,19 +27,22 @@ class HomepageView(TemplateView):
 
 class PostListView(LoginRequiredMixin, ListView):
     model=ScheduledPost
-    context_object_name = 'posts'
+    context_object_name = 'data'
     template_name = 'autopost/posts_list.html'
 
     def get_queryset(self):
-        pending = ScheduledPost.objects.filter(
+        all_posts = ScheduledPost.objects.all().order_by('-timestamp')
+
+        pending = all_posts.filter(
                     status='A'
-                ).order_by('-timestamp')
+                )
 
-        posted = ScheduledPost.objects.filter(
+        posted = all_posts.filter(
                     status='P'
-                ).order_by('-timestamp')
+                )
+        reports = UploadReport.objects.all()[:5]
 
-        return {'pending': pending, 'posted': posted}
+        return {'all_posts': all_posts, 'pending': pending, 'posted': posted, 'reports':reports}
 
 
 class PostDetailView(LoginRequiredMixin, DetailView):
