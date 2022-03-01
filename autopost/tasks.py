@@ -61,14 +61,15 @@ def login(browser, username=None, password=None, post=None, timeout=50):
 
 def start_browser(mode='simple', profile=True):
     import undetected_chromedriver as uc
+    options = uc.ChromeOptions()
+
+    if profile:
+        options.add_argument('--user-data-dir=ChromeBotProfile')
+
+    options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
+    browser = uc.Chrome(options=options, version_main=env.int('CHROME_VERSION'))
+
     if mode == 'human':
-        options = uc.ChromeOptions()
-
-        if profile:
-            options.add_argument('--user-data-dir=ChromeBotProfile')
-        options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=env.int('CHROME_VERSION'))
-
         browser.implicitly_wait(30)
         # Lets open amazon in the first tab
         #browser.get('https://sell.amazon.com/beginners-guide')
@@ -80,15 +81,10 @@ def start_browser(mode='simple', profile=True):
         #browser.execute_script("window.open('about:blank', 'thirdtab');")
         #browser.switch_to.window("thirdtab")
         browser.maximize_window()
-        return browser
     else:
-        options = uc.ChromeOptions()
+        browser.implicitly_wait(10)
 
-        options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        browser = uc.Chrome(options=options, version_main=env.int('CHROME_VERSION'))
-        browser.implicitly_wait(30)
-        browser.maximize_window()
-        return browser
+    return browser
 
 
 def upload_post(browser, post, retry=0):
@@ -154,7 +150,6 @@ def upload_post(browser, post, retry=0):
         #content_input.send_keys(7 * Keys.BACKSPACE)
         #write_post_wrapper= content_input.find_element_by_xpath(".//ancestor::div[@class='write-post-wrapper']")
         write_post_wrapper = content_input.find_element_by_xpath('./../../../../..')
-        print(f'Parent Class which is post wrapper is: {write_post_wrapper.get_attribute("class")}')
 
         if post.image is not None:
             UploadReport.objects.create(
@@ -176,7 +171,8 @@ def upload_post(browser, post, retry=0):
                 post=post,
                 notes=f'Successfully Uploaded the post On Etoro Website'
             )
-        #browser.get('https://www.etoro.com/accounts/logout/')
+        post.status = 'P'
+        post.save()
     except TimeoutException as e:
         img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
         #browser.save_screenshot(img)
@@ -205,7 +201,7 @@ def upload_post(browser, post, retry=0):
 
 def run_upload(post, etuser):
     try:
-        browser = start_browser(mode='human')
+        browser = start_browser(mode='human', profile=False)
         UploadReport.objects.create(
                 post=post,
                 notes='Upload in progress, GUI browser has been opened and maximized'
