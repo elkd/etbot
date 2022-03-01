@@ -53,8 +53,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 class CreatePostView(LoginRequiredMixin, CreateView):
     model=ScheduledPost
     template_name = 'autopost/new_post.html'
-    success_url = reverse_lazy('new_post')
-    success_message = "Successfully Created a new post, To be uploaded later!"
+    success_message = "Successfully Created a new pending post"
     fields = ['content', 'image','author', 'post_time']
 
     def get_form(self):
@@ -70,4 +69,4 @@ class CreatePostView(LoginRequiredMixin, CreateView):
             kwargs={"postid":self.object.id},
             eta=self.object.post_time,
         )
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect('posts_list')
