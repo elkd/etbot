@@ -26,7 +26,7 @@
                   <div class="blog-slider__content">
                     <span class="blog-slider__code"> {{ post.post_time }}</span>
                     <div class="blog-slider__title">{{ post.author }}</div>
-                    <div class="blog-slider__text">{{ post.content }}</div>
+                    <div class="blog-slider__text">{{ post.content | truncatechars:280 | linebreaks }}</div>
                     {% if post.status == 'A' %}
                         <a href="#" class="blog-slider__button">PENDING</a>
                     {% else %}
