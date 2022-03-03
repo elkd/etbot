@@ -38,7 +38,8 @@ def post_task(self, postid=None):
             #browser.save_screenshot(img)
             UploadReport.objects.create(
                 post=post,
-                notes=f'Failed to Complete the Upload, Celery will retry; Exception: {traceback.format_exc()}'
+                notes=f'Failed to Complete the Upload, Celery will retry',
+                exception=traceback.format_exc()
             )
             self.retry(exc=e, countdown=180)  # the task goes back to the queue
 
@@ -135,7 +136,9 @@ def upload_post(browser, post, retry=0):
 
             UploadReport.objects.create(
                     post=post,
-                    notes=f'Failed to Upload, known Exception captured: {traceback.format_exc()} Form is blocked, trying bypass...'
+                    notes=f'Failed to Upload, A known Exception captured: Upload Form is blocked by Etoro, trying bypass...',
+                    exception=traceback.format_exc(),
+                    cookies=browser.get_cookies()
                 )
             clear_complete_profile_popup(browser)
             sleep(16)
@@ -151,7 +154,7 @@ def upload_post(browser, post, retry=0):
         #write_post_wrapper= content_input.find_element_by_xpath(".//ancestor::div[@class='write-post-wrapper']")
         write_post_wrapper = content_input.find_element_by_xpath('./../../../../..')
 
-        if post.image is not None:
+        if post.image:
             UploadReport.objects.create(
                     post=post,
                     notes=f'Uploading in Progress, Fetching the post image: {post.image}'
@@ -178,7 +181,9 @@ def upload_post(browser, post, retry=0):
         #browser.save_screenshot(img)
         UploadReport.objects.create(
                 post=post,
-                notes=f'Failed to Upload, Browser: {browser.title}, Windows Size: {browser.get_window_size()}, Exception: {traceback.format_exc()} Retrying...'
+                notes=f'Failed to Upload, Browser: {browser.title}, Windows Size: {browser.get_window_size()}, Retrying...',
+                cookies=browser.get_cookies(),
+                exception=traceback.format_exc()
             )
 
         if retry < 3:
@@ -194,7 +199,9 @@ def upload_post(browser, post, retry=0):
         #browser.save_screenshot(img)
         UploadReport.objects.create(
                 post=post,
-                notes=f'Failed to Upload for Unknown reason, Title: {browser.title}, Cookies: {browser.get_cookies()}, Exception: {traceback.format_exc()}'
+                notes=f'Failed to Upload for Unknown reason, Title: {browser.title}',
+                cookies=browser.get_cookies(),
+                exception=traceback.format_exc()
             )
         sleep(30)
 
@@ -213,7 +220,9 @@ def run_upload(post, etuser):
         except Exception as e:
             UploadReport.objects.create(
                     post=post,
-                    notes='Login did not complete; Exception: {traceback.format_exc()}, Returned Msg: {title}'
+                    notes='Login did not complete; Returned Msg: {title}',
+                    cookies=browser.get_cookies(),
+                    exception=traceback.format_exc()
                 )
 
         if str(browser.current_url).endswith('home') or browser.title == "eToro":
@@ -233,7 +242,8 @@ def run_upload(post, etuser):
             #browser.save_screenshot(img)
             UploadReport.objects.create(
                     post=post,
-                    notes=f'Failed to Login; Browser title is: {title}, Cookies are: {browser.get_cookies()}'
+                    notes=f'Failed to Login; Browser title is: {title}',
+                    cookies=browser.get_cookies()
                 )
     finally:
         browser.close()
