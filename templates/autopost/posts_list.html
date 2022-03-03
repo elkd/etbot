@@ -213,22 +213,3 @@
     </div>
 
 </html>
-
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-          const bToggle = document.getElementById('b');
-          bToggle.focus();
-
-          const bought = document.getElementById('bought');
-          const sold = document.getElementById('sold');
-
-          bToggle.addEventListener('click', () => {
-              sold.style.display = 'none';
-              bought.style.display = 'block';
-          });
-          document.getElementById('s').addEventListener('click', () => {
-              bought.style.display = 'none';
-              sold.style.display = 'block';
-          });
-    });
-</script>

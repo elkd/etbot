@@ -9,7 +9,7 @@ from django.views.generic import (
         DetailView, DeleteView, TemplateView
     )
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
-
+from autopost.forms import UploadForm
 from autopost.models import ScheduledPost, EtoroUser, UploadReport
 from autopost.tasks import post_task
 
@@ -53,9 +53,9 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 
 class CreatePostView(LoginRequiredMixin, CreateView):
     model=ScheduledPost
+    form_class=UploadForm
     template_name = 'autopost/new_post.html'
     success_message = "Successfully Created a new pending post"
-    fields = ['content', 'image','author', 'post_time']
 
     """
     def post(self, request, *args, **kwargs):

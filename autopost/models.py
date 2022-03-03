@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 
 
+
 class EtoroUser(models.Model):
     username = models.CharField(max_length=64)
     password = models.CharField(max_length=64)
