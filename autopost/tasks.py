@@ -24,6 +24,21 @@ def post_task(self, postid=None):
         return None
 
     post = ScheduledPost.objects.get(id=postid)
+
+    if post.content is None:
+        UploadReport.objects.create(
+                post=post,
+                notes='Failed to Start the Upload process, Post content is empty'
+            )
+        return None
+
+    if post.author is None:
+        UploadReport.objects.create(
+                post=post,
+                notes='No Etoro User provided for this post, Uploading will terminate'
+            )
+        return None
+
     etuser = EtoroUser.objects.get(id=post.author.id)
     UploadReport.objects.create(
             post=post,
