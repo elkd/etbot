@@ -34,7 +34,7 @@ class ScheduledPost(models.Model):
         on_delete=models.CASCADE, null=True, blank=True
     )
     content = models.TextField()
-    image = models.ImageField(upload_to="images/", null=True, blank=True)
+    image = models.ImageField(upload_to="images/", null=True, blank=True, max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(
         max_length=300, null=True,
@@ -75,7 +75,9 @@ class UploadReport(models.Model):
             on_delete=models.CASCADE
         )
     notes = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to="images/uploadreport/", null=True, blank=True)
+    exception = models.TextField(null=True, blank=True)
+    cookies = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to="uploadreport/", null=True, blank=True, max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
