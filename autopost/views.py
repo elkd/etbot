@@ -57,17 +57,6 @@ class CreatePostView(LoginRequiredMixin, CreateView):
     template_name = 'autopost/new_post.html'
     success_message = "Successfully Created a new pending post"
 
-    """
-    def post(self, request, *args, **kwargs):
-        Handle POST requests: instantiate a form instance with the passed
-        POST variables and then check if it's valid.
-
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-    """
-
     def get_form(self):
         form = super().get_form()
         form.fields['post_time'].widget = DateTimePickerInput()
@@ -82,27 +71,3 @@ class CreatePostView(LoginRequiredMixin, CreateView):
             eta=self.object.post_time,
         )
         return redirect('posts_list')
-
-
-    '''
-    def form_invalid(self, form, data=None):
-        Render the invalid form messages as json responses
-        instead of html form.
-
-        if data:
-            if data['status'] == '400':
-                return JsonResponse(data)
-        if form.errors:
-            error_msg = re.sub('<[^<]+?>', ' ', str(form.errors))
-            data = {
-                'status': '400',
-                'error_message': f'Form error on {error_msg}'
-            }
-        else:
-            data = {
-                'status': '400',
-                'error_message': 'Sorry we can\'t process your post \
-                        please try again later'
-            }
-        return JsonResponse(data)
-    '''
