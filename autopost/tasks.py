@@ -18,12 +18,24 @@ from autopost.models import ScheduledPost, EtoroUser, UploadReport
 
 MEDIA_PATH = env('MEDIA_PATH')
 
-@shared_task(bind=True, max_retries=3, default_retry_delay=10 * 60)
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=10 * 60)
 def post_task(self, postid=None):
+    """ This tasks uploads content to Etoro
+
+    #Ideally max_retries should be 3 or 5 etc
+    #But there's a problem with celery jobs dispatcher
+    #I can't debug it but it retries even when no exception was captured
+    #I think it is because upload_post had no return statements in the past
+    #Now I have added return statements to all functions but didn't test
+    """
+
     if postid is None:
         return None
 
-    post = ScheduledPost.objects.get(id=postid)
+    post = ScheduledPost.objects.filter(id=postid).first()
+    if not post:
+        return None
 
     if post.content is None:
         UploadReport.objects.create(
@@ -39,7 +51,24 @@ def post_task(self, postid=None):
             )
         return None
 
-    etuser = EtoroUser.objects.get(id=post.author.id)
+    latest_rpt = UploadReport.objects.latest('timestamp')
+    #In the future add report code attribute and check that instead of notes
+    if latest_rpt.post == post and latest_rpt.notes == 'Successfully Uploaded the post On Etoro Website':
+        print()
+        print('==========================WARNING=========================')
+        print('The post has already been uploaded but Celery has retried')
+        print('Aborting...')
+        print('---------------------------------------------------------')
+        return None
+
+    etuser = EtoroUser.objects.filter(id=post.author.id).first()
+    if not etuser:
+        UploadReport.objects.create(
+                post=post,
+                notes='Etoro User could not be fetched from the db, Uploading will terminate'
+            )
+        return None
+
     UploadReport.objects.create(
             post=post,
             notes='Starting the Uploading Process...'
@@ -104,15 +133,13 @@ def start_browser(mode='simple', profile=True):
 
 
 def upload_post(browser, post, retry=0):
+    '''This is the function that does the main upload task
+
+    Even though no return value needed, any function's termination event,
+    this function MUST return for celery to mark the task complete and avoid retries
+    '''
     from selenium.webdriver.support.ui import WebDriverWait
     sleep(39)
-
-    if post.content is None:
-        UploadReport.objects.create(
-                post=post,
-                notes='Failed to Start the Upload process, Post content is empty'
-            )
-        return False
 
     try:
         wait = WebDriverWait(browser, 30)
@@ -191,6 +218,8 @@ def upload_post(browser, post, retry=0):
             )
         post.status = 'P'
         post.save()
+        return None
+
     except TimeoutException as e:
         img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
         #browser.save_screenshot(img)
@@ -219,6 +248,7 @@ def upload_post(browser, post, retry=0):
                 exception=traceback.format_exc()
             )
         sleep(30)
+        return None
 
 
 def run_upload(post, etuser):
@@ -250,7 +280,6 @@ def run_upload(post, etuser):
                     post=post,
                     notes=f'Logged In to account {etuser.username} successfully. Post creation is starting...'
                 )
-
             upload_post(browser, post)
         else:
             img = f'{MEDIA_PATH}/images/uploaderror/{post.slug}-{uuid.uuid4().hex[:6]}.png'
